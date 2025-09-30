@@ -1,5 +1,8 @@
 <?php
-require '../vendor/autoload.php';
+require './vendor/autoload.php';
+use Monolog\Level;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -45,6 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $mail->send();
         echo "Bericht is verzonden!";
+        
+        $log = new Logger('klachten');
+        $log->pushHandler(new StreamHandler(__DIR__ . '/info.log', Logger::INFO));
+        $log->info("Nieuwe klacht van $naam_user, Email: $email_user, Klacht: $beschrijvingklacht");
     } catch (Exception $e) {
         echo "Bericht kon niet worden verzonden. Mailer Error: {$mail->ErrorInfo}";
     }
